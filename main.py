@@ -46,7 +46,7 @@ class MDSmartTileArticle(ButtonBehavior, MDSmartTile):
 
 class TwoLineListItemArticle(TwoLineListItem):
     pass
-
+                
 class file_manager():
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -57,7 +57,7 @@ class file_manager():
             ext=['.png', '.jpg'])
 
 class EdaApp(MDApp):
-    
+    dialog = None
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.manager_open = False
@@ -343,16 +343,6 @@ class EdaApp(MDApp):
         with open("List_ingridient.txt", "r", encoding="utf-8") as f:
             i_list = f.read()
         self.i_list = i_list.split(" ")
-        win = ModalView(size_hint=(0.8, 0.8), background="image/bg1.png", on_pre_dismiss=lambda x: self.ingridient())
-        scroll = ScrollView()
-        listok = MDList(radius=[25, 0, 0, 0])
-        for i in self.i_list:
-            i = MDFillRoundFlatIconButton(text=i, text_color="black", icon="food", md_bg_color="orange")
-            i.bind(on_press=lambda x, i=i: self.colora_metall(i))
-            listok.add_widget(i)
-        scroll.add_widget(listok)
-        win.add_widget(scroll)
-        win.open()
 
     def editor_add_widget(self, widget, *args):
         if widget == 'Label':

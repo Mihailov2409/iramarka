@@ -27,11 +27,11 @@
 
 <MDScreen>
     FitImage:
-        source: 'images/bg1.png'
+        source: 'images/bg2.png'
         color: 1, 1, 1, 0.1
 <Screen>
     FitImage:
-        source: 'images/bg1.png'
+        source: 'images/bg2.png'
         color: 1, 1, 1, 0.1
 
 <TwoLineListItemArticle>
@@ -41,6 +41,9 @@
     _no_ripple_effect: True
 
 MDScreen:
+    FitImage:
+        source: 'images/bg2.jpg'
+        color: 1, 1, 1, 0.1
     MDNavigationLayout
 
         ScreenManager:
@@ -217,10 +220,6 @@ MDScreen:
             Screen:
                 name: "main"
 
-                FitImage:
-                    source: 'images/bg1.png'
-                    color: 1, 1, 1, 0.1
-
                 MDTopAppBar:
                     title: "Главная"
                     elevation: 4
@@ -249,9 +248,6 @@ MDScreen:
 
             Screen:
                 name: "account"
-
-                FitImage:
-                    source: 'images/bg1.png'
 
                 MDTopAppBar:
                     title: "Аккаунт"
@@ -315,8 +311,6 @@ MDScreen:
 
             Screen:
                 name: "friends"
-                FitImage:
-                    source: 'images/bg1.png'
                 MDTopAppBar:
                     title: "Друзья"
                     elevation: 4
@@ -340,8 +334,7 @@ MDScreen:
 
             Screen:
                 name: "recipes"
-                FitImage:
-                    source: 'images/bg1.png'
+
                 MDTopAppBar:
                     id: list_l
                     title: "Рецепты"
@@ -363,8 +356,7 @@ MDScreen:
 
             MDScreen:
                 name: "create_new"
-                FitImage:
-                    source: 'images/bg1.png'
+
                 MDTopAppBar:
                     title: "Создать рецепт"
                     elevation: 4
@@ -424,8 +416,7 @@ MDScreen:
                             app.saver()
             MDScreen:
                 name: "reading_r"
-                FitImage:
-                    source: 'images/bg1.png'
+
                 MDTopAppBar:
                     title: "Создать рецепт"
                     elevation: 4
@@ -480,6 +471,15 @@ MDScreen:
                         pos_hint: {"top": 0.1, "x": 0.5}
                         on_release:
                             app.screen("recipes")
+            MDScreen:
+                name: "ingidient"
+                MDTopAppBar:
+                    title: "Ингридиенты"
+                    elevation: 4
+                    pos_hint: {"top": 1}
+                    specific_text_color: "#000000"
+                    left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
+                    
 #Navigation menu ----------------------------------------------------------------------------------------
         MDNavigationDrawer:
             id: nav_drawer
@@ -535,3 +535,6 @@ MDScreen:
                     id: "Product"
                     icon: "food"
                     text: "Ингридиенты"
+                    on_release:
+                        app.screen("ingidient")
+                        app.close_nav()
