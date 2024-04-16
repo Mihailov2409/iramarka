@@ -1,3 +1,4 @@
+
 <DrawerClickableItem@MDNavigationDrawerItem>
     focus_color: "#FFA500"
     text_color: "#4a4939"
@@ -25,15 +26,6 @@
     article_id: 55
     on_release: app.open_recipe(self.article_id)
 
-<MDScreen>
-    FitImage:
-        source: 'images/bg2.png'
-        color: 1, 1, 1, 0.1
-<Screen>
-    FitImage:
-        source: 'images/bg2.png'
-        color: 1, 1, 1, 0.1
-
 <TwoLineListItemArticle>
     text: "[color=#ffffff][b]Title[/b][/color]"
     secondary_text: "[color=#808080][b]Subtitle[/b][/color]"
@@ -41,9 +33,6 @@
     _no_ripple_effect: True
 
 MDScreen:
-    FitImage:
-        source: 'images/bg2.jpg'
-        color: 1, 1, 1, 0.1
     MDNavigationLayout
 
         ScreenManager:
@@ -51,24 +40,29 @@ MDScreen:
 
             Screen:
                 name: 'start'
-                FitImage:
-                    source: 'images/bg2.jpg'
-                    color: 1, 1, 1, 0.1
+
                 MDFloatLayout:
                     id: start_layout
+                    Video:
+                        id: start_video
+                        source: 'images/startvideo.mp4'
+                        play: True
+                        volume: 0
+
                     Label:
                         id: start_screen_label
                         text: 'Добро пожаловать'
                         pos_hint: {'center_x': 0.3, 'center_y': 0.75}
                         font_name: 'fonts/FrenchKissscript.ttf'
                         font_size: 50
+                        color: 1, 1, 1, 0
 
                     MDRoundFlatButton:
                         id: start_screen_log_in_btn
                         text: 'Войти'
                         font_size: 20
-                        text_color: 0, 0, 0, 1
-                        line_color: 0, 0, 0, 0
+                        text_color: 1, 1, 1, 0
+                        line_color: 1, 1, 1, 0
                         size_hint: 0.75, 0.075
                         pos_hint: {'center_x': 0.3, 'center_y': 0.515}
                         on_release:
@@ -77,8 +71,8 @@ MDScreen:
                         id: start_screen_sign_up_btn
                         text: 'Зарегистрироваться'
                         font_size: 20
-                        text_color: 0, 0, 0, 0
-                        line_color: 0, 0, 0, 0
+                        text_color: 1, 1, 1, 0
+                        line_color: 1, 1, 1, 0
                         size_hint: 0.75, 0.075
                         pos_hint: {'center_x': 0.3, 'center_y': 0.375}
                         on_release:
@@ -93,6 +87,17 @@ MDScreen:
                         padding: 25
                         spacing: 20
                         orientation: 'vertical'
+
+
+                        MDLabel:
+                            id: login_welcome_label
+                            text: "Вход в аккаунт"
+                            font_name: 'fonts/Rhythm-and-Jazz-Decor.ttf'
+                            font_size: 27
+                            halign: 'center'
+                            size_hint_y: None
+                            height: self.texture_size[1]
+                            padding_y: 15
 
                         MDGridLayout:
                             cols: 2
@@ -220,6 +225,10 @@ MDScreen:
             Screen:
                 name: "main"
 
+                FitImage:
+                    source: 'images/bg1.png'
+                    color: 1, 1, 1, 0.1
+
                 MDTopAppBar:
                     title: "Главная"
                     elevation: 4
@@ -248,6 +257,9 @@ MDScreen:
 
             Screen:
                 name: "account"
+
+                FitImage:
+                    source: 'images/bg1.png'
 
                 MDTopAppBar:
                     title: "Аккаунт"
@@ -311,6 +323,8 @@ MDScreen:
 
             Screen:
                 name: "friends"
+                FitImage:
+                    source: 'images/bg1.png'
                 MDTopAppBar:
                     title: "Друзья"
                     elevation: 4
@@ -334,7 +348,8 @@ MDScreen:
 
             Screen:
                 name: "recipes"
-
+                FitImage:
+                    source: 'images/bg1.png'
                 MDTopAppBar:
                     id: list_l
                     title: "Рецепты"
@@ -342,21 +357,22 @@ MDScreen:
                     pos_hint: {"top": 1}
                     specific_text_color: "#000000"
                     left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
-                ScrollView:
-                    pos_hint: {"top": 0.8}
-                    GridLayout:
-                        id: fydra
-                        cols: 3
+
+                OneLineListItem:
+                    text: "У вас нет рецептов"
+                    pos_hint: {"top": 0.1}
+
                 MDFillRoundFlatIconButton:
                     icon: "pencil"
                     text: "Создать рецепт"
-                    pos_hint: {"top": 0.1, "x": 0.5}
+                    pos_hint: {"top": 0.2, "x": 0.5}
                     on_release:
                         app.screen("create_new")
 
             MDScreen:
                 name: "create_new"
-
+                FitImage:
+                    source: 'images/bg1.png'
                 MDTopAppBar:
                     title: "Создать рецепт"
                     elevation: 4
@@ -377,12 +393,10 @@ MDScreen:
                         on_press:
                             app.file_manager_open()
                     MDTextField:
-                        id: name_resipe
                         hint_text: "Название рецепта"
                         pos_hint: {"top": 0.9, "x": 0.2}
                         size_hint: 0.6, 0.1
                     MDTextField:
-                        id: kr_op
                         hint_text: "Краткое описание"
                         multiline: True
                         pos_hint: {"top": 0.8, "x": 0.2}
@@ -397,89 +411,15 @@ MDScreen:
                         on_press:
                             app.open_list_product()
                     MDTextField:
-                        id: getto
                         hint_text: "Ингридиенты"
                         pos_hint: {"top": 0.55, "x": 0.2}
                         size_hint: 0.6, 0.1
                     MDTextField:
-                        id: tyryry
-                        hint_text: "Технология приготовление"
+                        hint_text: "Приготовление"
                         multiline: True
                         pos_hint: {"top": 0.4, "x": 0.2}
                         size_hint: 0.6, 0.25
                         mode: "rectangle"
-                    MDFillRoundFlatIconButton:
-                        icon: "pencil"
-                        text: "Сохранить"
-                        pos_hint: {"top": 0.1, "x": 0.5}
-                        on_release:
-                            app.saver()
-            MDScreen:
-                name: "reading_r"
-
-                MDTopAppBar:
-                    title: "Создать рецепт"
-                    elevation: 4
-                    pos_hint: {"top": 1}
-                    specific_text_color: "#000000"
-                    left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
-                MDCard:
-                    size: root.width, root.height
-                    size_hint: 1, .8
-                    pos_hint: {"top": 0.9}
-                FloatLayout:
-                    MDIconButton:
-                        icon: "image"
-                        icon_size: "64sp"
-                        theme_icon_color: "Custom"
-                        icon_color: app.theme_cls.primary_color
-                        pos_hint: {"top": 0.9, "x": 0.8}
-                        
-                    MDTextField:
-                        id: name_resipe_r
-                        hint_text: "Название рецепта"
-                        pos_hint: {"top": 0.9, "x": 0.2}
-                        size_hint: 0.6, 0.1
-                    MDTextField:
-                        id: kr_op_r
-                        hint_text: "Краткое описание"
-                        multiline: True
-                        pos_hint: {"top": 0.8, "x": 0.2}
-                        size_hint: 0.6, 0.25
-                        mode: "rectangle"
-                    MDIconButton:
-                        icon: "plus-box"
-                        icon_size: "64sp"
-                        theme_icon_color: "Custom"
-                        icon_color: app.theme_cls.primary_color
-                        pos_hint: {"top": 0.55, "x": 0.8}
-                    MDTextField:
-                        id: getto_r
-                        hint_text: "Ингридиенты"
-                        pos_hint: {"top": 0.55, "x": 0.2}
-                        size_hint: 0.6, 0.1
-                    MDTextField:
-                        id: tyryry_r
-                        hint_text: "Технология приготовление"
-                        multiline: True
-                        pos_hint: {"top": 0.4, "x": 0.2}
-                        size_hint: 0.6, 0.25
-                        mode: "rectangle"
-                    MDFillRoundFlatIconButton:
-                        icon: "pencil"
-                        text: "Назад"
-                        pos_hint: {"top": 0.1, "x": 0.5}
-                        on_release:
-                            app.screen("recipes")
-            MDScreen:
-                name: "ingidient"
-                MDTopAppBar:
-                    title: "Ингридиенты"
-                    elevation: 4
-                    pos_hint: {"top": 1}
-                    specific_text_color: "#000000"
-                    left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
-                    
 #Navigation menu ----------------------------------------------------------------------------------------
         MDNavigationDrawer:
             id: nav_drawer
@@ -535,6 +475,4 @@ MDScreen:
                     id: "Product"
                     icon: "food"
                     text: "Ингридиенты"
-                    on_release:
-                        app.screen("ingidient")
-                        app.close_nav()
+                    

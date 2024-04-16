@@ -36,6 +36,7 @@ import server
 
 Window.size = (1080 / 3, 1920 / 3)
 
+
 class ContentNavigationDrawer(MDBoxLayout):
     pass
 
@@ -46,40 +47,15 @@ class MDSmartTileArticle(ButtonBehavior, MDSmartTile):
 
 class TwoLineListItemArticle(TwoLineListItem):
     pass
-                
-class file_manager():
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        Window.bind(on_keyboard=self.events)
-        self.manager_open = False
-        self.file_manager = MDFileManager(
-            exit_manager=self.exit_manager, select_path=self.select_path, preview=True, icon_folder="images/folder.png",
-            ext=['.png', '.jpg'])
+
+class RightCheckbox(IRightBodyTouch, MDCheckbox):
+    def on_checkbox_active(self, instance, value):
+        if value:  # Если флажок установлен
+            print(f"Checkbox {self.text} is active")
+        else:  # Если флажок снят
+            print(f"Checkbox {self.text} is inactive") 
 
 class EdaApp(MDApp):
-    dialog = None
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.manager_open = False
-        self.file_manager = MDFileManager(
-            exit_manager=self.exit_manager, select_path=self.select_path, preview=True, icon_folder="images/folder.png",
-            ext=['.png', '.jpg'])
-        self.Mori = []
-    def file_manager_open(self):
-        self.file_manager.show(os.path.expanduser("~"))  # output manager to the screen
-        self.manager_open = True
-    
-    def select_path(self, path: str):
-        self.exit_manager()
-        toast(path)
-        self.path = path
-
-    def exit_manager(self, *args):
-        self.manager_open = False
-        self.file_manager.close()
-    
-    
-    
     account = {
         "username": None,
         "password": None,
@@ -87,18 +63,28 @@ class EdaApp(MDApp):
     }
     screens = ['main']
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        Window.bind(on_keyboard=self.events)
+        self.manager_open = False
+        self.file_manager = MDFileManager(
+            exit_manager=self.exit_manager, select_path=self.select_path, preview=True, icon_folder="images/folder.png",
+            ext=['.png', '.jpg']
+        )
+
     def build(self):
         self.theme_cls.primary_palette = "Orange"
         self.theme_cls.theme_style = "Light"
-        self.title = "RecipeHub"
-        self.icon = "images/green_logo.png"
         return Builder.load_file("style.kv")
 
     def on_start(self):
         if self.user_init() == 0:
             self.screen('start')
             self.on_open_start_screen()
-    
+
+    def on_stop(self):
+        pass
+
     # Инициализации
     # region Inits
 
@@ -257,14 +243,24 @@ class EdaApp(MDApp):
 
     # Чтение рецептов
     # region reading_recipes
-    def read_box_r(self, name):
-        with open(f"resips/{name}.json", "r") as f:
-            ds = json.load(f)
-        self.root.ids.getto_r.text = ds["Ingridient"]
-        self.root.ids.name_resipe_r.text = ds["Name"]
-        self.root.ids.kr_op_r.text = ds["kr_op"]
-        self.root.ids.tyryry_r.text = ds["cooking"]
-        self.screen("reading_r")
+    def open_recipe(self, recipe_id):
+        recipe = server.get_recipe(recipe_id)
+        print(recipe_id, recipe)
+        self.root.ids.reader_title.text = recipe[1]
+        r_scroll = self.root.ids.reader_scroll
+        r_scroll.clear_widgets()
+
+        txt = MDLabel(
+            text=recipe[5]
+        )
+        author = MDLabel(
+            text=recipe[3]
+        )
+        r_scroll.add_widget(txt)
+        r_scroll.height += txt.height
+
+        self.screen('reader')
+
     # endregion
 
     # Аккаунт
@@ -297,65 +293,52 @@ class EdaApp(MDApp):
 
     # Редактор рецептов
     # region recipes_editor
-    def widget_creat(self, icon, name):
-        smart = MDSmartTile(radius=24,
-            box_radius=[0, 0, 24, 24],
-            box_color=(1, 1, 1, .2),
-            source=icon,
-            pos_hint={"center_x": .5, "center_y": .5},
-            size_hint=(None, None),
-            size=("120dp", "120dp"),)
-        smart.add_widget(MDLabel(bold=True, color=(1,1,1,1), text=name))
-        smart.bind(on_press=(lambda x: self.read_box_r(name)))
-        self.root.ids.fydra.add_widget(smart)
 
-    def saver(self):
-        ing = self.root.ids.getto.text
-        name = self.root.ids.name_resipe.text
-        kr_op = self.root.ids.kr_op.text
-        tyry = self.root.ids.tyryry.text
-        
-        try:
-            slovar = {"Name": name, "Ingridient": ing, "kr_op": kr_op, "cooking": tyry, "path_icon": self.path}
-
-            with open(f"resips/{name}.json", "w") as f:
-                f.write(json.dumps(slovar))
-
-            self.widget_creat(self.path, name)
-        except:
-            toast("Ошибка изображение")
     def colora_metall(self, x):
-        print(x.md_bg_color)
-        if x.md_bg_color != [1,0,0,1]:
-            x.md_bg_color = (1,0,0,1)
-            self.Mori.append(x.text)
-            print(self.Mori) 
-        else:
-            x.md_bg_color = "orange"
-            i = str(x.text)
-            if i in self.Mori:
-                self.Mori.remove(i)
-    
-    def ingridient(self):
-        pingvi = ",".join(self.Mori)
-        self.root.ids.getto.text = pingvi
+        self.d = x
+        self.d.md_bg_color = "red"
+
     def open_list_product(self):
         with open("List_ingridient.txt", "r", encoding="utf-8") as f:
             i_list = f.read()
-        self.i_list = i_list.split(" ")
+        i_list = i_list.split(" ")
+        win = ModalView(size_hint=(0.8, 0.8), background="image/bg1.png")
+        scroll = ScrollView()
+        listok = MDList(radius=[25, 0, 0, 0])
+        for i in i_list:
+            self.i = MDFillRoundFlatIconButton(text=i, text_color="black", icon="food")
+            self.i.bind(on_press=lambda x: self.colora_metall(self.i))
+            listok.add_widget(self.i)
+        scroll.add_widget(listok)
+        win.add_widget(scroll)
+        win.open()
 
     def editor_add_widget(self, widget, *args):
         if widget == 'Label':
             self.root.ids.editor_widgets_card.add_widget(
                 TextInput()
             )
+
+    def file_manager_open(self):
+        self.file_manager.show(os.path.expanduser("~"))  # output manager to the screen
+        self.manager_open = True
     
-    
+    def select_path(self, path: str):
+        self.exit_manager()
+        toast(path)
+        self.path = path
+
+    def exit_manager(self, *args):
+        self.manager_open = False
+        self.file_manager.close()
+
+
     # endregion
 
     # ЭТА ФУНКЦИЯ НУЖНА ДЛЯ РАБОТЫ РЕГИОНОВ И ВСЕГДА ДОЛЖНА БЫТЬ САМОЙ ПОСЛЕДНЕЙ В КЛАССЕ
     def end_function(self):
         pass
+
 
 if __name__ == '__main__':
     EdaApp().run()
